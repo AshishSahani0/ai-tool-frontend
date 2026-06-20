@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { ExternalLink, Plus } from "lucide-react";
+import { ExternalLink, Plus, Check } from "lucide-react";
+import { useCompare } from "@/context/CompareContext";
 
 type PricingType = "FREE" | "PAID" | "FREEMIUM";
 
@@ -21,9 +22,12 @@ type Tool = {
 const R2_PUBLIC_URL = process.env.NEXT_PUBLIC_R2_PUBLIC_URL ?? "";
 
 export default function ToolCard({ tool }: { tool: Tool }) {
+  const { isComparing, addToCompare, removeFromCompare } = useCompare();
   const logoUrl = tool.logoKey
     ? `${R2_PUBLIC_URL}/${tool.logoKey}`
     : "/placeholder.png";
+
+  const compared = isComparing(tool.slug);
 
   return (
     <div className="relative bg-white rounded-xl border border-slate-200 p-5 hover:shadow-lg hover:-translate-y-1 transition space-y-4">
@@ -33,11 +37,23 @@ export default function ToolCard({ tool }: { tool: Tool }) {
         onClick={(e) => {
           e.stopPropagation();
           e.preventDefault();
-          console.log("Add to compare:", tool.slug);
+          if (compared) {
+            removeFromCompare(tool.slug);
+          } else {
+            addToCompare(tool.slug);
+          }
         }}
-        className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full border border-slate-300 hover:bg-slate-100 transition"
+        className={`absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full border transition duration-300 z-20 ${
+          compared
+            ? "bg-green-50 border-green-300 hover:bg-green-100"
+            : "bg-white border-slate-300 hover:bg-slate-100"
+        }`}
       >
-        <Plus size={16} />
+        {compared ? (
+          <Check className="text-green-600" size={16} />
+        ) : (
+          <Plus size={16} />
+        )}
       </button>
 
       {/* CLICKABLE AREA */}

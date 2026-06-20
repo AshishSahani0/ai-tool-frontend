@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ToastProvider } from "@/components/toast/ToastContext";
+import { CompareProvider } from "@/context/CompareContext";
 
 export const metadata: Metadata = {
   title: "AItoolHub",
@@ -16,7 +17,9 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <ToastProvider>
-          {children}
+          <CompareProvider>
+            {children}
+          </CompareProvider>
         </ToastProvider>
       </body>
     </html>

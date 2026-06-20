@@ -1,5 +1,6 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import CompareFloatingBar from "@/components/CompareFloatingBar";
 
 export default function MainLayout({
   children,
@@ -10,6 +11,7 @@ export default function MainLayout({
     <>
       <Navbar />
       <main className="min-h-screen">{children}</main>
+      <CompareFloatingBar />
       <Footer />
     </>
   );
