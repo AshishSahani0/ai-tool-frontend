@@ -1,13 +1,6 @@
 // app/tools/page.tsx
 import ToolCategoryCard from "@/components/ToolCategoryCard";
-
 import { publicFetch } from "@/lib/publicApi";
-
-type Category = {
-  id: string;
-  name: string;
-  imageKey: string | null;
-};
 
 type SubCategory = {
   id: string;
@@ -15,7 +8,16 @@ type SubCategory = {
   toolCount: number;
 };
 
+type CategoryWithSubs = {
+  id: string;
+  name: string;
+  imageKey: string | null;
+  subCategories: SubCategory[];
+};
+
 const R2_PUBLIC_URL = process.env.NEXT_PUBLIC_R2_PUBLIC_URL!;
+
+export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "AI Tools Directory – Discover AI Tools by Category",
@@ -24,17 +26,8 @@ export const metadata = {
 };
 
 export default async function ToolsPage() {
-  const categories = await publicFetch<Category[]>(
-    "/api/public/categories"
-  );
-
-  const subMap = await Promise.all(
-    categories.map(async (c) => ({
-      categoryId: c.id,
-      subs: await publicFetch<SubCategory[]>(
-        `/api/public/categories/${c.id}/subcategories`
-      ),
-    }))
+  const categories = await publicFetch<CategoryWithSubs[]>(
+    "/api/public/categories/full"
   );
 
   return (
@@ -58,9 +51,6 @@ export default async function ToolsPage() {
       <main className="max-w-7xl mx-auto px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {categories.map((c) => {
-            const subs =
-              subMap.find((s) => s.categoryId === c.id)?.subs || [];
-
             const imageUrl = c.imageKey
               ? `${R2_PUBLIC_URL}/${c.imageKey}`
               : "/placeholder.png";
@@ -70,7 +60,7 @@ export default async function ToolsPage() {
                 key={c.id}
                 title={c.name}
                 imageUrl={imageUrl}
-                subCategories={subs}
+                subCategories={c.subCategories || []}
               />
             );
           })}

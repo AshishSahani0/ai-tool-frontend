@@ -39,25 +39,63 @@ export default function ToolsListWithPagination({
   const [sortBy, setSortBy] = useState("views");
 
   useEffect(() => {
-    setLoading(true);
 
-    const params = new URLSearchParams();
-    params.append("page", page.toString());
-    params.append("size", PAGE_SIZE.toString());
-    params.append("sortBy", sortBy);
+  let mounted = true;
 
-    if (pricing) params.append("pricingType", pricing);
-    if (verified !== null) params.append("verified", String(verified));
+  async function loadTools() {
 
-    publicFetch<PageResponse>(
-      `/api/public/subcategories/${subCategoryId}/tools?${params.toString()}`
-    )
-      .then((data) => {
-        setTools(data.content);
-        setTotalPages(data.totalPages);
-      })
-      .finally(() => setLoading(false));
-  }, [subCategoryId, page, pricing, verified, sortBy]);
+    try {
+
+      setLoading(true);
+
+      const params = new URLSearchParams();
+
+      params.append("page", page.toString());
+      params.append("size", PAGE_SIZE.toString());
+      params.append("sortBy", sortBy);
+
+      if (pricing) {
+        params.append("pricingType", pricing);
+      }
+
+      if (verified !== null) {
+        params.append("verified", String(verified));
+      }
+
+      const data = await publicFetch<PageResponse>(
+        `/api/public/subcategories/${subCategoryId}/tools?${params.toString()}`
+      );
+
+      if (!mounted) return;
+
+      setTools(data?.content || []);
+      setTotalPages(data?.totalPages || 0);
+
+    } catch (err) {
+
+      console.error("Failed loading tools:", err);
+
+      if (!mounted) return;
+
+      setTools([]);
+      setTotalPages(0);
+
+    } finally {
+
+      if (mounted) {
+        setLoading(false);
+      }
+    }
+  }
+
+  loadTools();
+
+  return () => {
+    mounted = false;
+  };
+
+}, [subCategoryId, page, pricing, verified, sortBy]);
+
 
   return (
     <div className="space-y-10">
