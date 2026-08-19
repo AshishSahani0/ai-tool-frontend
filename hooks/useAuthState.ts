@@ -1,21 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { onAuthStateChanged, User } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { useAuth } from "@/context/AuthContext";
 
 export function useAuthState() {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { user, backendUser, loading, logout, refreshBackendUser, updateProfileName } = useAuth();
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (u) => {
-      setUser(u);
-      setLoading(false);
-    });
-
-    return unsubscribe;
-  }, []);
-
-  return { user, loading };
-}
+  return {
+    user,
+    backendUser,
+    loading,
+    isAuthenticated: !!user,
+    isAdmin: backendUser?.role === "ADMIN",
+    logout,
+    refreshBackendUser,
+    updateProfileName,
+  };
+}

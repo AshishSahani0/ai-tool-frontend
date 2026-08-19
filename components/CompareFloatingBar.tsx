@@ -27,7 +27,7 @@ export default function CompareFloatingBar() {
             <h4 className="text-sm font-semibold text-slate-800">Compare Tools</h4>
           </div>
           <span className="text-xs bg-blue-50 text-blue-700 font-bold px-2 py-0.5 rounded-full">
-            {compareSlugs.length}/3
+            {compareSlugs.length}/4
           </span>
         </div>
 

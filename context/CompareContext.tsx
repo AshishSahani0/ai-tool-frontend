@@ -44,8 +44,8 @@ export function CompareProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    if (compareSlugs.length >= 3) {
-      showToast("Maximum of 3 tools can be compared at once", "error");
+    if (compareSlugs.length >= 4) {
+      showToast("Maximum of 4 tools can be compared at once", "error");
       return;
     }
 

@@ -2,11 +2,19 @@ import { signOut } from "firebase/auth";
 import { auth } from "./firebase";
 import { apiFetch } from "./apiFetch";
 
+export interface BackendUser {
+  id: string;
+  firebaseUid: string;
+  email: string;
+  name: string;
+  role: string;
+}
+
 export async function logout() {
   try {
     await apiFetch("/api/auth/logout", { method: "POST" });
   } catch {
-    // ignore backend failure
+    // ignore backend failure on network disconnect
   } finally {
     await signOut(auth);
   }
@@ -14,11 +22,8 @@ export async function logout() {
 
 /**
  * Sync Firebase user with backend
- * Returns backend user (email + role)
+ * Returns backend user (id, firebaseUid, email, name, role)
  */
-export async function syncUserWithBackend() {
-  return apiFetch<{
-    email: string;
-    role: string;
-  }>("/api/auth/me");
+export async function syncUserWithBackend(): Promise<BackendUser> {
+  return apiFetch<BackendUser>("/api/auth/me");
 }

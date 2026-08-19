@@ -23,7 +23,8 @@ export async function uploadToolLogo(file: File): Promise<string> {
   });
 
   if (!res.ok) {
-    throw new Error("Logo upload failed");
+    const errData = await res.json().catch(() => null);
+    throw new Error(errData?.message || errData?.error || "Logo upload failed");
   }
 
   const data = await res.json();

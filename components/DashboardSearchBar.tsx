@@ -106,9 +106,9 @@ export default function DashboardSearchBar() {
         }
 
         const data = await res.json();
-        setResults(data.results || []);
-        setTotalPages(data.totalPages || 0);
-        setTotalElements(data.totalElements || 0);
+        setResults(data.results || data.content || []);
+        setTotalPages(data.page?.totalPages ?? data.totalPages ?? 0);
+        setTotalElements(data.page?.totalElements ?? data.totalElements ?? 0);
         setExpanded(true);
       } catch (err) {
         console.error("Smart search failed:", err);
